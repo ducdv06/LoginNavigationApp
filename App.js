@@ -1,20 +1,51 @@
-import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View } from 'react-native';
+import React, {useContext} from "react";
+import {NavigationContainer} from "@react-navigation/native";
+import {createNativeStackNavigator} from "@react-navigation/native-stack";
+import {createBottomTabNavigator} from "@react-navigation/bottom-tabs";
 
-export default function App() {
-  return (
-    <View style={styles.container}>
-      <Text>Open up App.js to start working on your app!</Text>
-      <StatusBar style="auto" />
-    </View>
-  );
+import {AppProvider, AppContext} from "./AppContext";
+
+import SignIn from "./screens/SignIn";
+import SignUp from "./screens/SignUp";
+import HomeScreen from "./screens/HomeScreen";
+import ProfileScreen from "./screens/ProfileScreen";
+
+const Stack = createNativeStackNavigator();
+const Tab = createBottomTabNavigator();
+
+function AuthStack(){
+  return(
+    <Stack.Navigator>
+      <Stack.Screen name="SignIn" component={SignIn}/>
+      <Stack.Screen name="SignUp" component={SignUp}/>
+    </Stack.Navigator>
+  )
 }
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-});
+function MainTabs(){
+  return(
+    <Tab.Navigator>
+      <Tab.Screen name="Home" component={HomeScreen}/>
+      <Tab.Screen name="Profile" component={ProfileScreen}/>
+    </Tab.Navigator>
+  )
+}
+
+function RootNavigation(){
+
+  const {isLoggedIn} = useContext(AppContext);
+
+  return(
+    <NavigationContainer>
+      {isLoggedIn ? <MainTabs/> : <AuthStack/>}
+    </NavigationContainer>
+  )
+}
+
+export default function App(){
+  return(
+    <AppProvider>
+      <RootNavigation/>
+    </AppProvider>
+  )
+}
